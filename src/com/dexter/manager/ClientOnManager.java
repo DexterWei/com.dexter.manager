@@ -2,6 +2,7 @@ package com.dexter.manager;
 
 import org.codehaus.jettison.json.JSONObject;
 import org.codehaus.jettison.json.JSONException;
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -49,7 +50,7 @@ public class ClientOnManager {
 	
 	public static void execute(String device, String RscName,String op){
 		try {
-			System.out.println("Reading "+RscName+" value from client ...");
+			System.out.println("Ecexuting "+op+" operation on "+RscName+" at client ...");
 			Client client = Client.create();
 			WebResource r = client.resource(device+"execute/"+RscName+"/"+op);
 			ClientResponse response = r.accept("text/plain")
@@ -159,26 +160,58 @@ public class ClientOnManager {
 	
 	public static void main(String[] args) throws JSONException{
 		// TODO Auto-generated method stub
+		pause();
 		discover(DeviceUrl);
+		
+		pause();
 		read(DeviceUrl,"Thermometer");
-		writeAttr(DeviceUrl,"Thermometer");
-
-		write(DeviceUrl,"Thermometer","4 Celcius");
+		
+		
+		//writeAttr(DeviceUrl,"Thermometer");
+		
+		pause();
+		write(DeviceUrl,"Thermometer","0 Celcius");
 		read(DeviceUrl,"Thermometer");
+		
+		pause();
 		JSONObject nrc = new JSONObject().put("Name","Light").put("Value", "Off").put("Observed", "N").put("Observer", "");
 		create(DeviceUrl,nrc);
 		discover(DeviceUrl);
+		
+		pause();
 		delete(DeviceUrl,"Light");
 		discover(DeviceUrl);
+		
+		pause();
 		execute(DeviceUrl,"IceMaker","On");
 		discover(DeviceUrl);
+		
+		pause();
 		observe(DeviceUrl,"Thermometer",ManagerUrl+"notification");
 		discover(DeviceUrl);
-		for(int i=0;i<12;i++){
+		
+		pause();
+		System.out.println("Server predefined to return Cancel Observation as respond to the 10th notification in this demo");
+		for(int i=0;i<15;i++){
 			write(DeviceUrl,"Thermometer",i+" Celcius");
-			read(DeviceUrl,"Thermometer");
+		}
+		discover(DeviceUrl);
+		
+		pause();
+		System.out.println("Server predefined to send writeAttribute request with \"cancel\" field to the client after 10th notification");
+		observe(DeviceUrl,"Thermometer",ManagerUrl+"notification");
+		for(int i=14;i>=0;i--){
+			write(DeviceUrl,"Thermometer",i+" Celcius");
+			if(i == 5){
+				writeAttr(DeviceUrl,"Thermometer");
+			}
 		}
 		discover(DeviceUrl);
 	}
-
+	
+	private static void pause(){
+		System.out.println("\n\n#################################### Press Enter to continue ####################################");
+		try{System.in.read();}
+		catch(Exception e){}
+	}
 }

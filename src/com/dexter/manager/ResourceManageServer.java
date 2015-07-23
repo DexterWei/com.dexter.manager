@@ -57,7 +57,7 @@ public class ResourceManageServer {
 			DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
 			Calendar calobj = Calendar.getInstance();
 			obj.put("Time",df.format(calobj.getTime()));
-			//log+="\n"+obj.toString();
+			log+="\n"+obj.toString();
 			ManagerDAO.InsertRecord(obj);
 			if(ManagerDAO.CountRecord()==10){
 				return Response.status(201).entity("stop").build();
