@@ -51,14 +51,15 @@ public class ResourceManageServer {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response setName(String objString){
 		JSONObject obj;
+		ManagerDAO.Connect();
 		try {
 			obj = new JSONObject(objString);
 			DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
 			Calendar calobj = Calendar.getInstance();
-			log+="\n"+ objString+" "+df.format(calobj.getTime());
-			count++;
-			if(count==5){
-				count=0;
+			obj.put("Time",df.format(calobj.getTime()));
+			//log+="\n"+obj.toString();
+			ManagerDAO.InsertRecord(obj);
+			if(ManagerDAO.CountRecord()==10){
 				return Response.status(201).entity("stop").build();
 			}else
 				return Response.status(201).entity("go on").build();
